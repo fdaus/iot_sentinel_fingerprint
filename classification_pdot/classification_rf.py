@@ -11,3 +11,9 @@ from sklearn.ensemble import RandomForestClassifier
 
 df = pd.read_csv("dataset.csv")
 print (df.shape)
+
+# full dataset training
+
+# test with data unsw
+
+# 1 classification per device
