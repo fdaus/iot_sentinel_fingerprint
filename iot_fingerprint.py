@@ -20,7 +20,7 @@
 
 
 Usage:  iot_fingerprint.py -d <inputdir> [or] -i <inputpcap> -l <label> [and] -o <outputdir>
-Example: ./iot_fingerprint.py -d captures_IoT_Sentinel/captures_IoT-Sentinel/ -o csv_result_full/
+Example: ./iot_fingerprint.py -d captures_IoT-Sentinel/ -o csv_full_fingerprint/
 
 '''
 
@@ -66,7 +66,9 @@ def port_class_def(ip_port):
         registered port [1024,49151] => 2
         dynamic port [49152,65535] => 3
     """
-    #port = int.from_bytes(ip_port,'big')
+    if isinstance(ip_port,bytes):
+        ip_port = int.from_bytes(ip_port,byteorder='big')
+    
     if 0 <= ip_port <= 1023:
         return 1
     elif  1024 <= ip_port <= 49151 :
@@ -134,9 +136,21 @@ def parse_pcap(outputdir,capture,device_label,id_pcap):
         pck_size = 0
         pck_rawdata = 0
 
+        #tcp_win = 0
+        time_delta = 0
         
         i_counter+=1
         
+
+        #get time delta
+        if i_counter > 1 :
+            
+            time_delta = ts - last_time
+            #print ('Timestamp: ', str(datetime.datetime.utcfromtimestamp(ts)))
+            print("%d: %s Time_delta %f" % ( i_counter, str(datetime.datetime.utcfromtimestamp(ts)), time_delta ))
+        last_time = ts
+
+
         #Assign ethernet buffer value to eth
         eth = dpkt.ethernet.Ethernet(buf)
         ip = eth.data
@@ -218,26 +232,26 @@ def parse_pcap(outputdir,capture,device_label,id_pcap):
     #Create the array containing the 23 features
 
         #Dataframe to be pushed into csvpck_size
-        ar2={'ARP':[L2_arp],'LLC':[L2_llc],'EAPOL':[L3_eapol],'Pck_size':[pck_size],'Pck_rawdata':[pck_rawdata],'IP_padding':[ip_padding],'IP_ralert':[ip_ralert],'IP_add_count':[L3_ip_dst_counter],'Portcl_src':[port_class_src],'Portcl_dst':[port_class_dst],'ICMP':[L3_icmp],'ICMP6':[L3_icmp6],'TCP':[L4_tcp],'UDP':[L4_udp],'HTTPS':[L7_https],'HTTP':[L7_http],'DHCP':[L7_dhcp],'BOOTP':[L7_bootp],'SSDP':[L7_ssdp],'DNS':[L7_dns],'MDNS':[L7_mdns],'NTP':[L7_ntp],'Label':[device_label]}
-        headers_name=['ARP','LLC','EAPOL','Pck_size','Pck_rawdata','IP_padding','IP_ralert','IP_add_count','Portcl_src','Portcl_dst','ICMP','ICMP6','TCP','UDP','HTTPS','HTTP','DHCP','BOOTP','SSDP','DNS','MDNS','NTP','Label'] 
+        ar2={'time_delta':[time_delta],'ARP':[L2_arp],'LLC':[L2_llc],'EAPOL':[L3_eapol],'Pck_size':[pck_size],'Pck_rawdata':[pck_rawdata],'IP_padding':[ip_padding],'IP_ralert':[ip_ralert],'IP_add_count':[L3_ip_dst_counter],'Portcl_src':[port_class_src],'Portcl_dst':[port_class_dst],'ICMP':[L3_icmp],'ICMP6':[L3_icmp6],'TCP':[L4_tcp],'UDP':[L4_udp],'HTTPS':[L7_https],'HTTP':[L7_http],'DHCP':[L7_dhcp],'BOOTP':[L7_bootp],'SSDP':[L7_ssdp],'DNS':[L7_dns],'MDNS':[L7_mdns],'NTP':[L7_ntp],'Label':[device_label]}
+        headers_name=['Time_delta','ARP','LLC','EAPOL','Pck_size','Pck_rawdata','IP_padding','IP_ralert','IP_add_count','Portcl_src','Portcl_dst','ICMP','ICMP6','TCP','UDP','HTTPS','HTTP','DHCP','BOOTP','SSDP','DNS','MDNS','NTP','Label'] 
         df2= pandas.DataFrame(data=ar2,columns=headers_name)
 
         #Create dir for CSVs
         create_outputdir(outputdir,device_label)
 
         #create pickle 
-        pickle_file = outputdir+device_label+'/file_'+device_label+'_'+str(id_pcap)+'.pkl'
+        #pickle_file = outputdir+device_label+'/file_'+device_label+'_'+str(id_pcap)+'.pkl'
 
-        df2.to_pickle(pickle_file)
+        #df2.to_pickle(pickle_file)
 
         #Create CSV
         csv_file=outputdir+device_label+'/file_'+device_label+'_'+str(id_pcap)+'.csv'
- #   
+    
         df2.to_csv(csv_file, sep='\t', encoding='utf-8',mode='a', header=False)
 
         #Display features per packet
-        print (ar2)
-        print ('\n')
+        #print (ar2)
+        #print ('\n')
     
     f.close()
 
