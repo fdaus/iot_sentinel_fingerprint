@@ -1,6 +1,6 @@
 # IoT_Sentinel
 
-This repo is an replication of IoT sentinel: https://arxiv.org/pdf/1611.04880.pdf  
+This repo is a replication of IoT sentinel: https://arxiv.org/pdf/1611.04880.pdf  
 Device Fingerprint, it takes as input pcaps and tests each packets against 23 features: 
 
 
