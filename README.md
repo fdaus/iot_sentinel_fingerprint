@@ -15,8 +15,13 @@ Device Fingerprint, it takes as input pcaps and tests each packets against 23 fe
 
 
 
-Usage:  
+Fingerprint generation  
 ```
 iot_fingerprint.py -d <inputdir> [or] -i <inputpcap> -l <label> [and] -o <outputdir>  
-Example: ./iot-fingerprint.py -d captures_IoT_Sentinel/captures_IoT-Sentinel/ -o csv_result_full/
+Example: python iot_fingerprint.py -d captures_IoT-Sentinel/ -o csv_full_fingerprint/
+```
+
+Classification file
+```
+iot sentinel.ipynb
 ```

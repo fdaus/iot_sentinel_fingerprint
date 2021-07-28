@@ -20,7 +20,7 @@
 
 
 Usage:  iot_fingerprint.py -d <inputdir> [or] -i <inputpcap> -l <label> [and] -o <outputdir>
-Example: ./iot_fingerprint.py -d captures_IoT-Sentinel/ -o csv_full_fingerprint/
+Example:python iot_fingerprint.py -d captures_IoT-Sentinel/ -o csv_full_fingerprint/
 
 '''
 
